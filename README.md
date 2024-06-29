@@ -1,4 +1,4 @@
-# fusion
+# Fusion
 Exception-free error handling library.
 
 ## Example
