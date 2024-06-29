@@ -4,7 +4,7 @@ Exception-free error handling library.
 ## Example
 ```c++
 #include <iostream>
-#include <fus/fus.h>
+#include <fusion/fusion.h>
 
 enum class math_error {
   divide_by_zero
