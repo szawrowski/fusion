@@ -4,26 +4,26 @@ Exception-free error handling library.
 ## Example
 ```c++
 #include <iostream>
-#include <fusion/fusion.h>
+#include <fus/fus.h>
 
-enum class MathError {
-  kDivideByZero
+enum class math_error {
+  divide_by_zero
 };
 
-auto Divide(const double lhs, const double rhs)
-    -> fusion::Result<double, MathError> {
+fus::result_t<double, math_error> divide(const double lhs, const double rhs) {
   if (lhs == 0 || rhs == 0) {
-    return fusion::Error{MathError::kDivideByZero};
+    return fus::error_t{math_error::divide_by_zero};
   }
   return lhs / rhs;
 }
 
 int main() {
-  auto result = Divide(64, 4);
-  if (result.HasValue()) {
-    std::cout << "64 / 4 = " << result.Get() << std::endl;
+  auto result = divide(64, 4);
+  
+  if (result.has_value()) {
+    std::cout << "64 / 4 = " << result.get() << std::endl;
   } else {
-    if (result.GetError() == MathError::kDivideByZero) {
+    if (result.get_error() == math_error::divide_by_zero) {
       std::cerr << "Error: divide by zero" << std::endl;
     }
   }
