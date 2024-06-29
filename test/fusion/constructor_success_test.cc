@@ -3,8 +3,8 @@
 #include "fusion/fusion.h"
 
 TEST(ResultTest, ConstructorSuccess) {
-  const fusion::Result<int, std::string> result{64};
+  const fus::result_t<int, std::string> result{64};
 
-  ASSERT_TRUE(result.HasValue());
-  ASSERT_EQ(result.Get(), 64);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(result.get(), 64);
 }

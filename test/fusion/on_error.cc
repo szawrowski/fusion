@@ -3,12 +3,12 @@
 #include "fusion/fusion.h"
 
 TEST(ResultTest, OnError) {
-  const fusion::Result<int, std::string> result{
-      fusion::Error<std::string>{"Error message"}};
+  const fus::result_t<int, std::string> result{
+      fus::error_t<std::string>{"Error message"}};
 
   bool error_handled = false;
 
-  result.OnError([&error_handled](const std::string& error) {
+  result.on_error([&error_handled](const std::string& error) {
     error_handled = true;
     ASSERT_EQ(error, "Error message");
   });

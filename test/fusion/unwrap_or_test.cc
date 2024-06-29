@@ -3,8 +3,8 @@
 #include "fusion/fusion.h"
 
 TEST(ResultTest, UnwrapOr) {
-  const fusion::Result<int, std::string> result{
-      fusion::Error<std::string>{"Error message"}};
+  const fus::result_t<int, std::string> result{
+      fus::error_t<std::string>{"Error message"}};
 
-  ASSERT_EQ(result.UnwrapOr(42), 42);
+  ASSERT_EQ(result.unwrap_or(42), 42);
 }

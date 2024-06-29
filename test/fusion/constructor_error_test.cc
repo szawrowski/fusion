@@ -3,9 +3,9 @@
 #include "fusion/fusion.h"
 
 TEST(ResultTest, ConstructorError) {
-  const fusion::Result<int, std::string> result{
-      fusion::Error<std::string>{"Error message"}};
+  const fus::result_t<int, std::string> result{
+      fus::error_t<std::string>{"Error message"}};
 
-  ASSERT_TRUE(result.HasError());
-  ASSERT_EQ(result.GetError(), "Error message");
+  ASSERT_TRUE(result.has_error());
+  ASSERT_EQ(result.get_error(), "Error message");
 }
