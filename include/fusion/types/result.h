@@ -14,54 +14,54 @@
 
 #include "fusion/types/error.h"
 
-namespace fusion {
+namespace fus {
 
 template <typename T, typename E>
-class Result {
+class result_t {
 public:
-  using ValueType = T;
-  using ErrorType = E;
-  using ResultType = std::variant<ValueType, Error<ErrorType>>;
+  using value_type = T;
+  using error_type = E;
+  using result_type = std::variant<value_type, error_t<error_type>>;
 
 public:
-  constexpr Result(const ValueType& value) : inner_(value) {}
+  constexpr result_t(const value_type& value) : inner_(value) {}
 
-  constexpr Result(ValueType&& value) : inner_(std::move(value)) {}
+  constexpr result_t(value_type&& value) : inner_(std::move(value)) {}
 
-  constexpr Result(const Error<ErrorType>& error) : inner_(error) {}
+  constexpr result_t(const error_t<error_type>& error) : inner_(error) {}
 
-  constexpr Result(Error<ErrorType>&& error) : inner_(std::move(error)) {}
+  constexpr result_t(error_t<error_type>&& error) : inner_(std::move(error)) {}
 
   template <typename U>
-  constexpr Result(
+  constexpr result_t(
       U&& value,
-      std::enable_if_t<std::is_constructible_v<Error<ErrorType>, U>>* =
+      std::enable_if_t<std::is_constructible_v<error_t<error_type>, U>>* =
           nullptr) {
     using DecayedType = std::decay_t<U>;
-    if constexpr (std::is_same_v<DecayedType, ValueType>) {
+    if constexpr (std::is_same_v<DecayedType, value_type>) {
       inner_ = std::forward<U>(value);
     } else {
-      inner_ = Error<ErrorType>{std::forward<U>(value)};
+      inner_ = error_t<error_type>{std::forward<U>(value)};
     }
   }
 
-  Result(const Result& other) : inner_{other.inner_} {}
+  result_t(const result_t& other) : inner_{other.inner_} {}
 
-  Result& operator=(const Result& other) {
+  result_t& operator=(const result_t& other) {
     if (this != &other) {
       this->inner_ = other.inner_;
     }
     return *this;
   }
 
-  constexpr Result(Result&& other) noexcept(
-      std::is_nothrow_move_constructible_v<ValueType> &&
-      std::is_nothrow_move_constructible_v<ErrorType>)
+  constexpr result_t(result_t&& other) noexcept(
+      std::is_nothrow_move_constructible_v<value_type> &&
+      std::is_nothrow_move_constructible_v<error_type>)
       : inner_(std::move(other.inner_)) {}
 
-  Result& operator=(Result&& other) noexcept(
-      std::is_nothrow_move_assignable_v<ValueType> &&
-      std::is_nothrow_move_assignable_v<ErrorType>) {
+  result_t& operator=(result_t&& other) noexcept(
+      std::is_nothrow_move_assignable_v<value_type> &&
+      std::is_nothrow_move_assignable_v<error_type>) {
     if (this != &other) {
       inner_ = std::move(other.inner_);
     }
@@ -69,194 +69,195 @@ public:
   }
 
 public:
-  const ResultType& GetInner() const { return inner_; }
+  const result_type& get_inner() const { return inner_; }
 
 public:
-  constexpr bool operator==(const Result& other) const {
+  constexpr bool operator==(const result_t& other) const {
     return inner_ == other.inner_;
   }
 
-  constexpr bool operator!=(const Result& other) const {
+  constexpr bool operator!=(const result_t& other) const {
     return !(*this == other);
   }
 
-  explicit operator bool() const noexcept { return HasValue(); }
+  explicit operator bool() const noexcept { return has_value(); }
 
 public:
-  [[nodiscard]] constexpr bool HasValue() const noexcept {
-    return std::holds_alternative<ValueType>(inner_);
+  [[nodiscard]] constexpr bool has_value() const noexcept {
+    return std::holds_alternative<value_type>(inner_);
   }
 
-  [[nodiscard]] constexpr bool HasError() const noexcept {
-    return std::holds_alternative<Error<ErrorType>>(inner_);
+  [[nodiscard]] constexpr bool has_error() const noexcept {
+    return std::holds_alternative<error_t<error_type>>(inner_);
   }
 
 public:
-  const ValueType& Get() const {
-    if (HasValue()) {
-      return std::get<ValueType>(inner_);
+  const value_type& get() const {
+    if (has_value()) {
+      return std::get<value_type>(inner_);
     }
-    throw std::logic_error("Called Get() on an error result");
+    throw std::logic_error("Called get() on an error result");
   }
 
-  // ValueType& Get() {
-  //   if (HasValue()) {
-  //     return std::get<ValueType>(inner_);
+  // value_type& get() {
+  //   if (has_value()) {
+  //     return std::get<value_type>(inner_);
   //   }
-  //   throw std::logic_error("Called Get() on an error result");
+  //   throw std::logic_error("Called get() on an error result");
   // }
 
-  const ErrorType& GetError() const {
-    if (HasError()) {
-      return std::get<Error<ErrorType>>(inner_).Get();
+  const error_type& get_error() const {
+    if (has_error()) {
+      return std::get<error_t<error_type>>(inner_).get();
     }
-    throw std::logic_error("Called Error() on a non-error result");
+    throw std::logic_error("Called error_t() on a non-error result");
   }
 
-  // ErrorType& GetError() {
-  //   if (HasError()) {
-  //     return std::get<Error<ErrorType>>(inner_).Get();
+  // error_type& get_error() {
+  //   if (has_error()) {
+  //     return std::get<error_t<error_type>>(inner_).get();
   //   }
-  //   throw std::logic_error("Called Error() on a non-error result");
+  //   throw std::logic_error("Called error_t() on a non-error result");
   // }
 
 public:
   template <typename Func>
-  auto Map(Func func) const {
-    if (HasValue()) {
-      return Result<std::invoke_result_t<Func, const ValueType&>, ErrorType>(
-          func(std::get<ValueType>(inner_)));
+  auto map(Func func) const {
+    if (has_value()) {
+      return result_t<std::invoke_result_t<Func, const value_type&>,
+                      error_type>(func(std::get<value_type>(inner_)));
     }
     return *this;
   }
 
   template <typename Func>
-  auto MapError(Func func) const {
-    if (HasError()) {
-      return Result<ValueType, std::invoke_result_t<Func, const ErrorType&>>(
-          func(std::get<Error<ErrorType>>(inner_).Get()));
+  auto map_error(Func func) const {
+    if (has_error()) {
+      return result_t<value_type,
+                      std::invoke_result_t<Func, const error_type&>>(
+          func(std::get<error_t<error_type>>(inner_).get()));
     }
     return *this;
   }
 
   template <typename Func>
-  auto AndThen(Func func) const {
-    if (HasValue()) {
-      return func(std::get<ValueType>(inner_));
+  auto and_then(Func func) const {
+    if (has_value()) {
+      return func(std::get<value_type>(inner_));
     }
     return *this;
   }
 
   template <typename Func>
-  auto OrElse(Func func) const {
-    if (HasError()) {
-      return func(std::get<Error<ErrorType>>(inner_).Get());
+  auto or_else(Func func) const {
+    if (has_error()) {
+      return func(std::get<error_t<error_type>>(inner_).get());
     }
     return *this;
   }
 
   template <typename U>
-  ValueType UnwrapOr(const U& value) const {
-    if (HasValue()) {
-      return std::get<ValueType>(inner_);
+  value_type unwrap_or(const U& value) const {
+    if (has_value()) {
+      return std::get<value_type>(inner_);
     }
     return value;
   }
 
   template <typename ErrFunc>
-  auto UnwrapOrElse(ErrFunc func) const {
-    if (HasValue()) {
-      return std::get<ValueType>(inner_);
+  auto unwrap_or_else(ErrFunc func) const {
+    if (has_value()) {
+      return std::get<value_type>(inner_);
     }
-    return func(std::get<Error<ErrorType>>(inner_).Get());
+    return func(std::get<error_t<error_type>>(inner_).get());
   }
 
-  const ValueType& UnwrapOrDefault() const {
-    static ValueType default_value{};
-    return UnwrapOr(default_value);
+  const value_type& unwrap_or_default() const {
+    static value_type default_value{};
+    return unwrap_or(default_value);
   }
 
-  const ValueType& UnwrapOrDefault(const ValueType& default_value) const {
-    return UnwrapOr(default_value);
+  const value_type& unwrap_or_default(const value_type& default_value) const {
+    return unwrap_or(default_value);
   }
 
-  const ValueType& Expect(const std::string& message) const {
-    if (HasValue()) {
-      return std::get<ValueType>(inner_);
+  const value_type& expect(const std::string& message) const {
+    if (has_value()) {
+      return std::get<value_type>(inner_);
     }
     throw std::runtime_error(message);
   }
 
   template <typename U>
-  auto ExpectError(const U& message) const {
-    if (HasError()) {
-      return std::get<Error<ErrorType>>(inner_).Get();
+  auto expect_error(const U& message) const {
+    if (has_error()) {
+      return std::get<error_t<error_type>>(inner_).get();
     }
     throw std::runtime_error(message);
   }
 
   template <typename Func>
-  auto Filter(Func func) const {
-    if (HasValue() && func(std::get<ValueType>(inner_))) {
+  auto filter(Func func) const {
+    if (has_value() && func(std::get<value_type>(inner_))) {
       return *this;
     }
-    return Result{Error<ErrorType>{}};
+    return result_t{error_t<error_type>{}};
   }
 
   template <typename U, typename Func>
-  auto Fold(U&& init, Func&& f) const {
-    if (HasValue()) {
+  auto fold(U&& init, Func&& f) const {
+    if (has_value()) {
       return std::forward<Func>(f)(std::forward<U>(init),
-                                   std::get<ValueType>(inner_));
+                                   std::get<value_type>(inner_));
     }
     return std::forward<U>(init);
   }
 
   template <typename Func>
-  auto Then(Func func) const {
-    if (HasValue()) {
-      return func(std::get<ValueType>(inner_));
+  auto then(Func func) const {
+    if (has_value()) {
+      return func(std::get<value_type>(inner_));
     }
     return *this;
   }
 
   template <typename Func>
-  auto CatchError(Func func) const {
-    if (HasError()) {
-      return func(std::get<Error<ErrorType>>(inner_).Get());
+  auto catch_error(Func func) const {
+    if (has_error()) {
+      return func(std::get<error_t<error_type>>(inner_).get());
     }
     return *this;
   }
 
   template <typename Func>
-  auto OnError(Func func) const {
-    if (HasError()) {
-      func(std::get<Error<ErrorType>>(inner_).Get());
+  auto on_error(Func func) const {
+    if (has_error()) {
+      func(std::get<error_t<error_type>>(inner_).get());
     }
     return *this;
   }
 
   template <typename Func>
-  auto Customize(Func&& func) const {
+  auto customize(Func&& func) const {
     return func(*this);
   }
 
   template <typename TFunc, typename EFunc, typename... Args>
-  auto Inspect(TFunc value_func, EFunc error_func, Args&&... args) const {
-    if (HasValue()) {
+  auto inspect(TFunc value_func, EFunc error_func, Args&&... args) const {
+    if (has_value()) {
       return std::invoke(std::forward<TFunc>(value_func),
-                         std::get<ValueType>(inner_),
+                         std::get<value_type>(inner_),
                          std::forward<Args>(args)...);
     }
     return std::invoke(std::forward<EFunc>(error_func),
-                       std::get<Error<ErrorType>>(inner_).Get(),
+                       std::get<error_t<error_type>>(inner_).get(),
                        std::forward<Args>(args)...);
   }
 
 private:
-  ResultType inner_;
+  result_type inner_;
 };
 
-}  // namespace fusion
+}  // namespace fus
 
 #endif  // FUSION_TYPE_RESULT_H_

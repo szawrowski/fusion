@@ -8,29 +8,29 @@
 
 #include <utility>
 
-namespace fusion {
+namespace fus {
 
 template <typename E>
-class Error {
+class error_t {
 public:
-  explicit Error(E error) : error_{std::move(error)} {}
+  explicit error_t(E error) : error_{std::move(error)} {}
 
-  const E& Get() const noexcept { return error_; }
+  const E& get() const noexcept { return error_; }
 
 private:
   E error_;
 };
 
 template <typename E>
-bool operator==(const Error<E>& lhs, const Error<E>& rhs) {
-  return lhs.Get() == rhs.Get();
+bool operator==(const error_t<E>& lhs, const error_t<E>& rhs) {
+  return lhs.get() == rhs.get();
 }
 
 template <typename E>
-bool operator!=(const Error<E>& lhs, const Error<E>& rhs) {
+bool operator!=(const error_t<E>& lhs, const error_t<E>& rhs) {
   return !(lhs == rhs);
 }
 
-}  // namespace fusion
+}  // namespace fus
 
 #endif  // FUSION_TYPE_ERROR_H_
