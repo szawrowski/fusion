@@ -10,9 +10,9 @@ enum class math_error {
   divide_by_zero
 };
 
-fus::result_t<double, math_error> divide(const double lhs, const double rhs) {
+cait::result_t<double, math_error> divide(const double lhs, const double rhs) {
   if (lhs == 0 || rhs == 0) {
-    return fus::error_t{math_error::divide_by_zero};
+    return cait::error_t{math_error::divide_by_zero};
   }
   return lhs / rhs;
 }
