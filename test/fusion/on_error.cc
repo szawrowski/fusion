@@ -3,8 +3,8 @@
 #include "fusion/fusion.h"
 
 TEST(ResultTest, OnError) {
-  const fus::result_t<int, std::string> result{
-      fus::error_t<std::string>{"Error message"}};
+  const cait::result_t<int, std::string> result{
+      cait::error_t<std::string>{"Error message"}};
 
   bool error_handled = false;
 

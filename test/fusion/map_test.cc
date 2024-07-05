@@ -3,7 +3,7 @@
 #include "fusion/fusion.h"
 
 TEST(ResultTest, Map) {
-  const fus::result_t<int, std::string> result{42};
+  const cait::result_t<int, std::string> result{42};
   const auto mapped = result.map([](const int value) { return value + 1; });
 
   ASSERT_TRUE(mapped.has_value());

@@ -3,7 +3,7 @@
 #include "fusion/fusion.h"
 
 TEST(ResultTest, FoldValue) {
-  const fus::result_t<int, std::string> result{42};
+  const cait::result_t<int, std::string> result{42};
 
   const auto folded = result.fold(
       10, [](const int acc, const int value) { return acc + value; });
@@ -12,8 +12,8 @@ TEST(ResultTest, FoldValue) {
 }
 
 TEST(ResultTest, FoldError) {
-  const fus::result_t<int, std::string> result{
-      fus::error_t<std::string>{"Error message"}};
+  const cait::result_t<int, std::string> result{
+      cait::error_t<std::string>{"Error message"}};
 
   const auto folded = result.fold(
       10, [](const int acc, const int value) { return acc + value; });

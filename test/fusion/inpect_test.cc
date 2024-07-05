@@ -3,7 +3,7 @@
 #include "fusion/fusion.h"
 
 TEST(ResultTest, InspectValue) {
-  const fus::result_t<int, std::string> success_result{42};
+  const cait::result_t<int, std::string> success_result{42};
 
   success_result.inspect(
       [](const int value) { ASSERT_EQ(value, 42); },
@@ -11,8 +11,8 @@ TEST(ResultTest, InspectValue) {
 }
 
 TEST(ResultTest, InspectError) {
-  const fus::result_t<int, std::string> error_result{
-      fus::error_t<std::string>{"Error message"}};
+  const cait::result_t<int, std::string> error_result{
+      cait::error_t<std::string>{"Error message"}};
 
   error_result.inspect(
       [](int) { FAIL() << "Expected error"; },
