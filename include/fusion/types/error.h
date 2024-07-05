@@ -8,7 +8,7 @@
 
 #include <utility>
 
-namespace fus {
+namespace cait {
 
 template <typename E>
 class error_t {
@@ -31,6 +31,6 @@ bool operator!=(const error_t<E>& lhs, const error_t<E>& rhs) {
   return !(lhs == rhs);
 }
 
-}  // namespace fus
+}  // namespace cait
 
 #endif  // FUSION_TYPE_ERROR_H_

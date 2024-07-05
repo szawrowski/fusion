@@ -6,7 +6,6 @@
 #ifndef FUSION_TYPE_RESULT_H_
 #define FUSION_TYPE_RESULT_H_
 
-#include <functional>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -14,7 +13,7 @@
 
 #include "fusion/types/error.h"
 
-namespace fus {
+namespace cait {
 
 template <typename T, typename E>
 class result_t {
@@ -258,6 +257,6 @@ private:
   result_type inner_;
 };
 
-}  // namespace fus
+}  // namespace cait
 
 #endif  // FUSION_TYPE_RESULT_H_
